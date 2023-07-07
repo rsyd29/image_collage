@@ -1,14 +1,12 @@
 library image_collage_widget;
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'blocs/collage_bloc.dart';
 import 'blocs/collage_event.dart';
 import 'blocs/collage_state.dart';
-import 'utils/CollageType.dart';
+import 'utils/collage_type.dart';
 import 'utils/permission_type.dart';
 import 'widgets/row_widget.dart';
 
@@ -19,25 +17,27 @@ class ImageCollageWidget extends StatefulWidget {
   final bool withImage;
 
   const ImageCollageWidget({
+    super.key,
     this.filePath,
     required this.collageType,
     required this.withImage,
   });
 
   @override
-  State<StatefulWidget> createState() {
-    return _ImageCollageWidget(filePath ?? '', collageType);
-  }
+  State<ImageCollageWidget> createState() => _ImageCollageWidgetState(
+        filePath: filePath ?? '',
+        collageType: collageType,
+      );
 }
 
-class _ImageCollageWidget extends State<ImageCollageWidget>
+class _ImageCollageWidgetState extends State<ImageCollageWidget>
     with WidgetsBindingObserver {
-  late String _filePath;
-  late CollageType _collageType;
-  var _withImage = false;
-  late CollageBloc _imageListBloc;
+  late final String filePath;
+  late final CollageType collageType;
+  bool _withImage = false;
+  late CollageBloc imageListBloc;
 
-  _ImageCollageWidget(this._filePath, this._collageType);
+  _ImageCollageWidgetState({required this.filePath, required this.collageType});
 
   @override
   void initState() {
@@ -46,32 +46,36 @@ class _ImageCollageWidget extends State<ImageCollageWidget>
     _withImage = widget.withImage;
 
     WidgetsBinding.instance.addObserver(this);
-    _imageListBloc = CollageBloc(
-        context: context, path: _filePath, collageType: _collageType);
-    _imageListBloc.add(ImageListEvent(_imageListBloc.blankList()));
-    _imageListBloc.add(ImageListEvent(_imageListBloc.blankList()));
+    imageListBloc = CollageBloc(
+      context: context,
+      path: filePath,
+      collageType: collageType,
+    );
+    imageListBloc.add(ImageListEvent(imageListBloc.blankList()));
+    imageListBloc.add(ImageListEvent(imageListBloc.blankList()));
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _imageListBloc.close();
+    imageListBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => _imageListBloc,
+      create: (BuildContext context) => imageListBloc,
       child: BlocBuilder(
-        bloc: _imageListBloc,
+        bloc: imageListBloc,
         builder: (context, CollageState state) {
           if (state is PermissionDeniedState) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text("To show images you have to allow storage permission."),
+                  const Text(
+                      "To show images you have to allow storage permission."),
                   TextButton(
                     style: ButtonStyle(
                         shape:
@@ -79,7 +83,7 @@ class _ImageCollageWidget extends State<ImageCollageWidget>
                                 RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadius.circular(10.0)))),
-                    child: Text("Allow"),
+                    child: const Text("Allow"),
                     onPressed: () => _handlePermission(),
                   ),
                 ],
@@ -87,8 +91,8 @@ class _ImageCollageWidget extends State<ImageCollageWidget>
             );
           }
           if (state is LoadImageState) {
-            return Center(
-              child: const CircularProgressIndicator(),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
           if (state is ImageListState) {
@@ -103,15 +107,14 @@ class _ImageCollageWidget extends State<ImageCollageWidget>
   }
 
   void _handlePermission() {
-    _imageListBloc.add(CheckPermissionEvent(true, PermissionType.Storage, 0));
+    imageListBloc
+        .add(const CheckPermissionEvent(true, PermissionType.storage, 0));
   }
 
   Widget _gridView() {
     return AspectRatio(
       aspectRatio: 1.0 / 1.0,
-      child: Container(
-        child: GridCollageWidget(_collageType, _imageListBloc, context),
-      ),
+      child: GridCollageWidget(collageType, imageListBloc, context),
     );
   }
 }

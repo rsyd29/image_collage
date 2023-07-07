@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:image_collage_widget/model/images.dart';
 
-@immutable
 abstract class CollageState extends Equatable {
-  CollageState([List props = const []]) : super();
+  const CollageState([List props = const []]) : super();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///Initial state

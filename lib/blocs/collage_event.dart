@@ -3,16 +3,23 @@ import 'package:image_collage_widget/model/images.dart';
 import 'package:image_collage_widget/utils/permission_type.dart';
 
 abstract class CollageEvent extends Equatable {
-  CollageEvent([List props = const []]) : super();
+  const CollageEvent([List props = const []]) : super();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///Checking permission event
 class CheckPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
-  int index = 0;
+  final int index;
 
-  CheckPermissionEvent(this.isFromPicker, this.permissionType, this.index);
+  const CheckPermissionEvent(
+    this.isFromPicker,
+    this.permissionType,
+    this.index,
+  );
 
   @override
   String toString() => 'CheckPermissionEvent';
@@ -25,8 +32,9 @@ class CheckPermissionEvent extends CollageEvent {
 class AskPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
-  int index = 0;
-  AskPermissionEvent(this.isFromPicker, this.permissionType, this.index);
+  final int index;
+
+  const AskPermissionEvent(this.isFromPicker, this.permissionType, this.index);
 
   @override
   String toString() => 'AskPermissionEvent';
@@ -39,8 +47,13 @@ class AskPermissionEvent extends CollageEvent {
 class AllowPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
-  int index = 0;
-  AllowPermissionEvent(this.isFromPicker, this.permissionType, this.index);
+  final int index;
+
+  const AllowPermissionEvent(
+    this.isFromPicker,
+    this.permissionType,
+    this.index,
+  );
 
   @override
   String toString() => 'AllowPermissionEvent';
@@ -53,8 +66,9 @@ class AllowPermissionEvent extends CollageEvent {
 class DenyPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
-  int index = 0;
-  DenyPermissionEvent(this.isFromPicker, this.permissionType, this.index);
+  final int index;
+
+  const DenyPermissionEvent(this.isFromPicker, this.permissionType, this.index);
 
   @override
   String toString() => 'DenyPermissionEvent';
@@ -67,7 +81,7 @@ class DenyPermissionEvent extends CollageEvent {
 class ImageListEvent extends CollageEvent {
   final List<Images> imageList;
 
-  ImageListEvent(this.imageList);
+  const ImageListEvent(this.imageList);
 
   @override
   String toString() => 'ImageListEvent';

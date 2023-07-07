@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:image_collage_widget/utils/CollageType.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_collage_widget/utils/collage_type.dart';
 
 import 'src/screens/collage_sample.dart';
 import 'src/tranistions/fade_route_transition.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 void main() {
-  BlocOverrides.runZoned(
-    () => runApp(MyApp()),
-    blocObserver: AppBlocObserver(),
-  );
+  Bloc.observer = AppBlocObserver();
+  runApp(const MyApp());
 }
 
 // Custom [BlocObserver] that observes all bloc and cubit state changes.
@@ -27,6 +24,8 @@ class AppBlocObserver extends BlocObserver {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,14 +35,16 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.blue,
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -57,13 +58,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Widget buildRaisedButton(CollageType collageType, String text) {
-      return RaisedButton(
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(backgroundColor: color),
         onPressed: () => pushImageWidget(collageType),
-        shape: buttonShape(),
-        color: color,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(text),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.black,
+            ),
+          ),
         ),
       );
     }
@@ -71,24 +76,24 @@ class _MyHomePageState extends State<MyHomePage> {
     ///Create multple shapes
     return Scaffold(
       appBar: AppBar(
-        title: Text("Test"),
+        title: const Text("Test"),
       ),
       body: Center(
         child: ListView(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           shrinkWrap: true,
           children: <Widget>[
-            buildRaisedButton(CollageType.VSplit, 'Vsplit'),
-            buildRaisedButton(CollageType.HSplit, 'HSplit'),
-            buildRaisedButton(CollageType.FourSquare, 'FourSquare'),
-            buildRaisedButton(CollageType.NineSquare, 'NineSquare'),
-            buildRaisedButton(CollageType.ThreeVertical, 'ThreeVertical'),
-            buildRaisedButton(CollageType.ThreeHorizontal, 'ThreeHorizontal'),
-            buildRaisedButton(CollageType.LeftBig, 'LeftBig'),
-            buildRaisedButton(CollageType.RightBig, 'RightBig'),
-            buildRaisedButton(CollageType.FourLeftBig, 'FourLeftBig'),
-            buildRaisedButton(CollageType.VMiddleTwo, 'VMiddleTwo'),
-            buildRaisedButton(CollageType.CenterBig, 'CenterBig'),
+            buildRaisedButton(CollageType.vSplit, 'Vsplit'),
+            buildRaisedButton(CollageType.hSplit, 'HSplit'),
+            buildRaisedButton(CollageType.fourSquare, 'FourSquare'),
+            buildRaisedButton(CollageType.nineSquare, 'NineSquare'),
+            buildRaisedButton(CollageType.threeVertical, 'ThreeVertical'),
+            buildRaisedButton(CollageType.threeHorizontal, 'ThreeHorizontal'),
+            buildRaisedButton(CollageType.leftBig, 'LeftBig'),
+            buildRaisedButton(CollageType.rightBig, 'RightBig'),
+            buildRaisedButton(CollageType.fourLeftBig, 'FourLeftBig'),
+            buildRaisedButton(CollageType.vMiddleTwo, 'VMiddleTwo'),
+            buildRaisedButton(CollageType.centerBig, 'CenterBig'),
           ],
         ),
       ),
@@ -101,8 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
       FadeRouteTransition(page: CollageSample(type)),
     );
   }
-
-
 
   RoundedRectangleBorder buttonShape() {
     return RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0));
