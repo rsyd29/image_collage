@@ -113,7 +113,7 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
 
   Widget _gridView() {
     return AspectRatio(
-      aspectRatio: 1.0 / 1.0,
+      aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
       child: GridCollageWidget(collageType, imageListBloc, context),
     );
   }
