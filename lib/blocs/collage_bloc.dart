@@ -273,6 +273,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     } else if (collageType == CollageType.vMiddleTwo ||
         collageType == CollageType.centerBig) {
       return 7;
+    } else {
+      return 1;
     }
   }
 

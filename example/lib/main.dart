@@ -83,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(16.0),
           shrinkWrap: true,
           children: <Widget>[
+            buildRaisedButton(CollageType.one, 'one'),
             buildRaisedButton(CollageType.vSplit, 'Vsplit'),
             buildRaisedButton(CollageType.hSplit, 'HSplit'),
             buildRaisedButton(CollageType.fourSquare, 'FourSquare'),

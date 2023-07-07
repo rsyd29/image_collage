@@ -25,29 +25,31 @@ class GridCollageWidget extends StatelessWidget {
     if (_imageListBloc.state is ImageListState) {
       _imageList = (_imageListBloc.state as ImageListState).images;
 
-      return StaggeredGridView.countBuilder(
-        shrinkWrap: false,
-        itemCount: _imageList.length,
-        crossAxisCount: getCrossAxisCount(_collageType),
-        primary: true,
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
-        itemBuilder: (BuildContext context, int index) => buildRow(index),
-        staggeredTileBuilder: (int index) => StaggeredTile.count(
-          getCellCount(
-            index: index,
-            isForCrossAxis: true,
-            type: _collageType,
-          ),
-          double.parse(
-            getCellCount(
-              index: index,
-              isForCrossAxis: false,
-              type: _collageType,
-            ).toString(),
-          ),
-        ),
-      );
+      return (_imageList.length != 1)
+          ? StaggeredGridView.countBuilder(
+              shrinkWrap: false,
+              itemCount: _imageList.length,
+              crossAxisCount: getCrossAxisCount(_collageType),
+              primary: true,
+              crossAxisSpacing: 4,
+              mainAxisSpacing: 4,
+              itemBuilder: (BuildContext context, int index) => buildRow(index),
+              staggeredTileBuilder: (int index) => StaggeredTile.count(
+                getCellCount(
+                  index: index,
+                  isForCrossAxis: true,
+                  type: _collageType,
+                ),
+                double.parse(
+                  getCellCount(
+                    index: index,
+                    isForCrossAxis: false,
+                    type: _collageType,
+                  ).toString(),
+                ),
+              ),
+            )
+          : buildRow(0);
     }
     return Container(
       color: Colors.green,
@@ -73,7 +75,7 @@ class GridCollageWidget extends StatelessWidget {
         type == CollageType.centerBig) {
       return 12;
     } else {
-      return 0;
+      return 1;
     }
   }
 
@@ -321,6 +323,8 @@ class GridCollageWidget extends StatelessWidget {
       } else {
         return (index == 1) ? 12 : 4;
       }
+    } else {
+      return 1;
     }
   }
 
