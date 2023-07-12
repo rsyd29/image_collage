@@ -182,7 +182,10 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
       key: widget.screenshotKey,
       child: AspectRatio(
         aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
-        child: GridCollageWidget(collageType, imageListBloc, context),
+        child: Container(
+          color: Colors.white,
+          child: GridCollageWidget(collageType, imageListBloc, context),
+        ),
       ),
     );
   }
