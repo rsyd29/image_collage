@@ -15,10 +15,15 @@ class GridCollageWidget extends StatelessWidget {
   final CollageType _collageType;
   final CollageBloc _imageListBloc;
   final BuildContext _context;
+  final Color colors;
 
-  GridCollageWidget(this._collageType, this._imageListBloc, this._context,
-      {Key? key})
-      : super(key: key);
+  GridCollageWidget(
+    this._collageType,
+    this._imageListBloc,
+    this._context, {
+    Key? key,
+    required this.colors,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -133,13 +138,27 @@ class GridCollageWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    buildDialogOption(index, isForStorage: false),
-                    buildDialogOption(index),
+                    buildDialogOption(
+                      index,
+                      isForStorage: false,
+                      colors: colors,
+                      collageType: _collageType,
+                    ),
+                    buildDialogOption(
+                      index,
+                      colors: colors,
+                      collageType: _collageType,
+                    ),
                     (_imageListBloc.state as ImageListState)
                                 .images[index]
                                 .imageUrl !=
                             null
-                        ? buildDialogOption(index, isForRemovePhoto: true)
+                        ? buildDialogOption(
+                            index,
+                            isForRemovePhoto: true,
+                            colors: colors,
+                            collageType: _collageType,
+                          )
                         : Container(),
                   ],
                 ),
@@ -150,8 +169,13 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Show dialog
-  Widget buildDialogOption(int index,
-      {bool isForStorage = true, bool isForRemovePhoto = false}) {
+  Widget buildDialogOption(
+    int index, {
+    bool isForStorage = true,
+    bool isForRemovePhoto = false,
+    Color colors = Colors.black,
+    CollageType collageType = CollageType.one,
+  }) {
     return TextButton(
         onPressed: () {
           dismissDialog();
@@ -164,6 +188,8 @@ class GridCollageWidget extends StatelessWidget {
                         ? PermissionType.storage
                         : PermissionType.camera,
                     index,
+                    colors,
+                    collageType,
                   ),
                 );
         },

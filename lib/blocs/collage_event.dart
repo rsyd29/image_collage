@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:image_collage_widget/model/images.dart';
+import 'package:image_collage_widget/utils/collage_type.dart';
 import 'package:image_collage_widget/utils/permission_type.dart';
 
 abstract class CollageEvent extends Equatable {
@@ -14,11 +16,15 @@ class CheckPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
   final int index;
+  final Color colors;
+  final CollageType collageType;
 
   const CheckPermissionEvent(
     this.isFromPicker,
     this.permissionType,
     this.index,
+    this.colors,
+    this.collageType,
   );
 
   @override
@@ -33,8 +39,16 @@ class AskPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
   final int index;
+  final Color colors;
+  final CollageType collageType;
 
-  const AskPermissionEvent(this.isFromPicker, this.permissionType, this.index);
+  const AskPermissionEvent(
+    this.isFromPicker,
+    this.permissionType,
+    this.index,
+    this.colors,
+    this.collageType,
+  );
 
   @override
   String toString() => 'AskPermissionEvent';
@@ -48,11 +62,15 @@ class AllowPermissionEvent extends CollageEvent {
   final PermissionType permissionType;
   final bool isFromPicker;
   final int index;
+  final Color colors;
+  final CollageType collageType;
 
   const AllowPermissionEvent(
     this.isFromPicker,
     this.permissionType,
     this.index,
+    this.colors,
+    this.collageType,
   );
 
   @override

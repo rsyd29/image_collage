@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_collage_widget/model/images.dart';
 import 'package:image_collage_widget/utils/collage_type.dart';
 import 'package:image_collage_widget/utils/permission_type.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -22,11 +23,23 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   CollageBloc(
       {required this.context, required this.collageType, required this.path})
       : super(InitialState()) {
-    on<CheckPermissionEvent>((event, emit) =>
-        checkPermission(event.isFromPicker, event.permissionType, event.index));
-    on<AllowPermissionEvent>((event, emit) {
+    on<CheckPermissionEvent>(
+      (event, emit) => checkPermission(
+        event.isFromPicker,
+        event.permissionType,
+        event.index,
+        event.colors,
+        event.collageType,
+      ),
+    );
+    on<AllowPermissionEvent>((event, emit) async {
       if (event.isFromPicker) {
-        openPicker(event.permissionType, event.index);
+        await openPicker(
+          event.permissionType,
+          event.index,
+          event.colors,
+          event.collageType,
+        );
       } else {
         emit(LoadImageState());
         loadImages(path, getImageCount());
@@ -37,6 +50,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
         event.isFromPicker,
         event.permissionType,
         event.index,
+        event.colors,
+        event.collageType,
       ),
     );
 
@@ -62,6 +77,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     bool isFromPicker,
     PermissionType permissionType,
     int index,
+    Color colors,
+    CollageType collageType,
   ) async {
     PermissionStatus permissionStatus = PermissionStatus.denied;
 
@@ -70,6 +87,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
       isFromPicker,
       permissionType,
       index,
+      colors,
+      collageType,
     );
   }
 
@@ -79,12 +98,30 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     bool isFromPicker,
     PermissionType permissionType,
     int index,
+    Color colors,
+    CollageType collageType,
   ) async {
     try {
       if (await Permissions.cameraAndStoragePermissionsGranted()) {
-        add(AllowPermissionEvent(isFromPicker, permissionType, index));
+        add(
+          AllowPermissionEvent(
+            isFromPicker,
+            permissionType,
+            index,
+            colors,
+            collageType,
+          ),
+        );
       } else {
-        add(AskPermissionEvent(isFromPicker, permissionType, index));
+        add(
+          AskPermissionEvent(
+            isFromPicker,
+            permissionType,
+            index,
+            colors,
+            collageType,
+          ),
+        );
       }
     } catch (e) {
       debugPrint('Camera Exception ::: $e');
@@ -92,7 +129,12 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Open picker dialog for photo selection
-  openPicker(PermissionType permissionType, int index) async {
+  Future<void> openPicker(
+    PermissionType permissionType,
+    int index,
+    Color colors,
+    CollageType collageType,
+  ) async {
     PickedFile? image = await ImagePicker.platform.pickImage(
       source: permissionType == PermissionType.storage
           ? ImageSource.gallery
@@ -100,10 +142,49 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     );
 
     if (image != null) {
-      var imageList = (state as ImageListState).images;
-      imageList[index].imageUrl = File(image.path);
-      add(ImageListEvent(imageList));
+      final imageList = (state as ImageListState).images;
+
+      final croppedFile = await cropImage(
+        image.path,
+        colors,
+        collageType,
+      );
+      if (croppedFile != null) {
+        imageList[index].imageUrl = File(croppedFile.path);
+        add(ImageListEvent(imageList));
+      }
     }
+  }
+
+  ///Crop image screen for crop photo selection
+  Future<CroppedFile?> cropImage(
+    String sourcePath,
+    Color colors,
+    CollageType collageType,
+  ) async {
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: sourcePath,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: colors,
+          activeControlsWidgetColor: colors,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: (collageType == CollageType.fourSquare)
+              ? CropAspectRatioPreset.square
+              : CropAspectRatioPreset.ratio16x9,
+          lockAspectRatio: true,
+          showCropGrid: true,
+        ),
+      ],
+    );
+
+    return croppedFile;
   }
 
   ///Asking permission (Platform specific)
@@ -111,6 +192,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     bool isFromPicker,
     PermissionType permissionType,
     int index,
+    Color colors,
+    CollageType collageType,
   ) async {
     Map<Permission, PermissionStatus> statuses = {};
 
@@ -134,6 +217,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
                 permissionType,
                 index,
                 statuses,
+                colors,
+                collageType,
               ),
             );
       } else {
@@ -145,6 +230,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
                 permissionType,
                 index,
                 statuses,
+                colors,
+                collageType,
               ),
             );
       }
@@ -157,6 +244,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
               permissionType,
               index,
               statuses,
+              colors,
+              collageType,
             ),
           );
     }
@@ -169,6 +258,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     PermissionType permissionType,
     int index,
     Map<Permission, PermissionStatus> status,
+    Color colors,
+    CollageType collageType,
   ) {
     if (status[isForStorage
             ? Platform.isIOS
@@ -181,6 +272,8 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
           isFromPicker,
           permissionType,
           index,
+          colors,
+          collageType,
         ),
       );
     } else {

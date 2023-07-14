@@ -107,14 +107,26 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
   }
 
   void _handlePermission() {
-    imageListBloc
-        .add(const CheckPermissionEvent(true, PermissionType.storage, 0));
+    imageListBloc.add(
+      CheckPermissionEvent(
+        true,
+        PermissionType.storage,
+        0,
+        Colors.black,
+        widget.collageType,
+      ),
+    );
   }
 
   Widget _gridView() {
     return AspectRatio(
       aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
-      child: GridCollageWidget(collageType, imageListBloc, context),
+      child: GridCollageWidget(
+        collageType,
+        imageListBloc,
+        context,
+        colors: Colors.black,
+      ),
     );
   }
 }

@@ -169,10 +169,12 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
 
   void _handlePermission() {
     imageListBloc.add(
-      const CheckPermissionEvent(
+      CheckPermissionEvent(
         true,
         PermissionType.storage,
         0,
+        widget.color ?? Colors.black,
+        widget.collageType,
       ),
     );
   }
@@ -184,7 +186,12 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
         aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
         child: Container(
           color: Colors.white,
-          child: GridCollageWidget(collageType, imageListBloc, context),
+          child: GridCollageWidget(
+            collageType,
+            imageListBloc,
+            context,
+            colors: widget.color ?? Colors.black,
+          ),
         ),
       ),
     );
