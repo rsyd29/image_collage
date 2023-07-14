@@ -164,11 +164,9 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   ) async {
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio16x9
-      ],
+      aspectRatioPresets: (collageType == CollageType.fourSquare)
+          ? [CropAspectRatioPreset.square]
+          : [CropAspectRatioPreset.ratio16x9],
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Image',
