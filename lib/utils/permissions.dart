@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,15 +13,23 @@ class Permissions {
       switch (Platform.isAndroid ? 1 : 0) {
         ///For Android
         case 1:
-          PermissionStatus storagePermissionStatus =
-              await _getStoragePermission();
+          AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
+          AndroidBuildVersion version = androidInfo.version;
+          PermissionStatus getPhotosPermission = await _getPhotosPermission();
+          PermissionStatus getStoragePermission = await _getStoragePermission();
+
+          PermissionStatus storagePermissionStatus = (version.sdkInt >= 33)
+              ? getPhotosPermission
+              : getStoragePermission;
 
           if (cameraPermissionStatus == PermissionStatus.granted &&
               storagePermissionStatus == PermissionStatus.granted) {
             return true;
           } else {
             _handleInvalidPermissions(
-                cameraPermissionStatus, storagePermissionStatus);
+              cameraPermissionStatus,
+              storagePermissionStatus,
+            );
             return false;
           }
 
@@ -55,6 +64,23 @@ class Permissions {
       }
     } catch (e, s) {
       debugPrint('Exception _getCameraPermission: $e');
+      debugPrintStack(stackTrace: s);
+      rethrow;
+    }
+  }
+
+  ///Checking photos permission
+  static Future<PermissionStatus> _getPhotosPermission() async {
+    try {
+      PermissionStatus permission = await Permission.photos.status;
+      if (permission != PermissionStatus.granted) {
+        PermissionStatus permissionStatus = await Permission.photos.request();
+        return permissionStatus;
+      } else {
+        return permission;
+      }
+    } catch (e, s) {
+      debugPrint('Exception _getPhotosPermission: $e');
       debugPrintStack(stackTrace: s);
       rethrow;
     }
