@@ -58,7 +58,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     on<DenyPermissionEvent>(
       (event, emit) {
         showSnackBar();
-        if (!event.isFromPicker) {
+        if (event.isFromPicker) {
           emit(PermissionDeniedState());
         }
       },
@@ -102,27 +102,30 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     CollageType collageType,
   ) async {
     try {
-      if (await Permissions.cameraAndStoragePermissionsGranted()) {
-        add(
-          AllowPermissionEvent(
-            isFromPicker,
-            permissionType,
-            index,
-            colors,
-            collageType,
-          ),
-        );
-      } else {
-        add(
-          AskPermissionEvent(
-            isFromPicker,
-            permissionType,
-            index,
-            colors,
-            collageType,
-          ),
-        );
-      }
+      await Permissions.cameraAndStoragePermissionsGranted()
+          .then((isCameraAndStoragePermissionsGranted) {
+        if (isCameraAndStoragePermissionsGranted) {
+          add(
+            AllowPermissionEvent(
+              isFromPicker,
+              permissionType,
+              index,
+              colors,
+              collageType,
+            ),
+          );
+        } else {
+          add(
+            AskPermissionEvent(
+              isFromPicker,
+              permissionType,
+              index,
+              colors,
+              collageType,
+            ),
+          );
+        }
+      });
     } catch (e) {
       debugPrint('Camera Exception ::: $e');
     }
@@ -285,7 +288,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     }
   }
 
-  ///For remove photo from perticular index
+  ///For remove photo from particular index
   dispatchRemovePhotoEvent(int index) {
     var imageList = (state as ImageListState).images;
     imageList[index].imageUrl = null;
@@ -370,10 +373,16 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Used to show message
-  showSnackBar({String msg = "Permission Denied."}) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg),
-      duration: const Duration(milliseconds: 1000),
-    ));
+  showSnackBar({String? msg}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg ?? 'Permission Denied.'),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Settings',
+          onPressed: () async => await openAppSettings(),
+        ),
+      ),
+    );
   }
 }
