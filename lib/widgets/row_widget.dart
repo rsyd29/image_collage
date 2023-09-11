@@ -95,7 +95,7 @@ class GridCollageWidget extends StatelessWidget {
             child: _imageList[index].imageUrl != null
                 ? Image.file(
                     _imageList[index].imageUrl ?? File(''),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitHeight,
                   )
                 : const Padding(
                     padding: EdgeInsets.all(3),
