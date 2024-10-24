@@ -138,24 +138,30 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
     Color colors,
     CollageType collageType,
   ) async {
-    PickedFile? image = await ImagePicker.platform.pickImage(
-      source: permissionType == PermissionType.storage
-          ? ImageSource.gallery
-          : ImageSource.camera,
-    );
+    try {
+      final ImagePicker picker = ImagePicker();
 
-    if (image != null) {
-      final imageList = (state as ImageListState).images;
-
-      final croppedFile = await cropImage(
-        image.path,
-        colors,
-        collageType,
+      XFile? image = await picker.pickImage(
+        source: permissionType == PermissionType.storage
+            ? ImageSource.gallery
+            : ImageSource.camera,
       );
-      if (croppedFile != null) {
-        imageList[index].imageUrl = File(croppedFile.path);
-        add(ImageListEvent(imageList));
+
+      if (image != null) {
+        final imageList = (state as ImageListState).images;
+
+        final croppedFile = await cropImage(
+          image.path,
+          colors,
+          collageType,
+        );
+        if (croppedFile != null) {
+          imageList[index].imageUrl = File(croppedFile.path);
+          add(ImageListEvent(imageList));
+        }
       }
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
@@ -167,9 +173,6 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   ) async {
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
-      aspectRatioPresets: (collageType == CollageType.fourSquare)
-          ? [CropAspectRatioPreset.square, CropAspectRatioPreset.original]
-          : [CropAspectRatioPreset.ratio16x9, CropAspectRatioPreset.original],
       uiSettings: [
         AndroidUiSettings(
           toolbarTitle: 'Crop Image',
@@ -182,6 +185,14 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
           lockAspectRatio: true,
           showCropGrid: true,
         ),
+        IOSUiSettings(
+          title: 'Crop Image',
+          aspectRatioLockEnabled: true,
+          showCancelConfirmationDialog: true,
+          aspectRatioPresets: (collageType == CollageType.fourSquare)
+              ? [CropAspectRatioPreset.square]
+              : [CropAspectRatioPreset.ratio16x9],
+        )
       ],
     );
 

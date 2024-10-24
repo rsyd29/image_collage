@@ -21,9 +21,9 @@ class GridCollageWidget extends StatelessWidget {
     this._collageType,
     this._imageListBloc,
     this._context, {
-    Key? key,
+    super.key,
     required this.colors,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
