@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../blocs/collage_bloc.dart';
@@ -16,6 +18,7 @@ class GridCollageWidget extends StatelessWidget {
   final CollageBloc _imageListBloc;
   final BuildContext _context;
   final Color colors;
+  final GlobalKey? screenshotKey;
 
   GridCollageWidget(
     this._collageType,
@@ -23,6 +26,7 @@ class GridCollageWidget extends StatelessWidget {
     this._context, {
     super.key,
     required this.colors,
+    required this.screenshotKey,
   });
 
   @override
@@ -38,7 +42,8 @@ class GridCollageWidget extends StatelessWidget {
               primary: true,
               crossAxisSpacing: 4,
               mainAxisSpacing: 4,
-              itemBuilder: (BuildContext context, int index) => buildRow(index),
+              itemBuilder: (BuildContext context, int index) =>
+                  buildRow(context, index),
               staggeredTileBuilder: (int index) => StaggeredTile.count(
                 getCellCount(
                   index: index,
@@ -54,7 +59,7 @@ class GridCollageWidget extends StatelessWidget {
                 ),
               ),
             )
-          : buildRow(0);
+          : buildRow(context, 0);
     }
     return Container(
       color: Colors.green,
@@ -85,7 +90,7 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Build UI either image is selected or not
-  Widget buildRow(int index) {
+  Widget buildRow(BuildContext context, int index) {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -112,9 +117,59 @@ class GridCollageWidget extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(5)),
                 color: Colors.transparent,
                 child: InkWell(
-                  highlightColor: Colors.transparent,
-                  onTap: () => showDialogImage(index),
-                ))),
+                    highlightColor: Colors.transparent,
+                    onTap: () => showDialogImage(index),
+                    onLongPress: () async {
+                      RenderRepaintBoundary? boundary =
+                          screenshotKey?.currentContext?.findRenderObject()
+                              as RenderRepaintBoundary?;
+                      final image = await boundary?.toImage(
+                        pixelRatio: 5.0,
+                      );
+
+                      final imageByte = await image?.toByteData(
+                          format: ui.ImageByteFormat.png);
+                      if (imageByte != null) {
+                        final imageBytes = imageByte.buffer.asUint8List();
+
+                        ui.Image originalImage =
+                            await decodeImageFromList(imageBytes);
+
+                        final recorder = ui.PictureRecorder();
+                        final canvas = Canvas(recorder);
+
+                        // Terjemahkan titik asal ke tengah gambar
+                        canvas.translate(originalImage.width.toDouble() / 2,
+                            originalImage.height.toDouble() / 2);
+
+                        // Kembalikan titik asal dan gambar
+                        canvas.translate(-originalImage.width.toDouble() / 2,
+                            -originalImage.height.toDouble() / 2);
+                        canvas.drawImage(originalImage, Offset.zero, Paint());
+
+                        final picture = recorder.endRecording();
+                        final correctedImage = await picture.toImage(
+                            originalImage.width, originalImage.height);
+
+                        final correctedBytes = await correctedImage.toByteData(
+                            format: ui.ImageByteFormat.png);
+                        final correctedUint8List =
+                            correctedBytes!.buffer.asUint8List();
+
+                        if (context.mounted) {
+                          await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                child: Image(
+                                  image: MemoryImage(correctedUint8List),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }
+                    }))),
       ],
     );
   }

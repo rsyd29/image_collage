@@ -15,10 +15,12 @@ class ImageCollageWidget extends StatefulWidget {
   final String? filePath;
   final CollageType collageType;
   final bool withImage;
+  final GlobalKey? screenshotKey;
 
   const ImageCollageWidget({
     super.key,
     this.filePath,
+    this.screenshotKey,
     required this.collageType,
     required this.withImage,
   });
@@ -78,11 +80,9 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
                       "To show images you have to allow storage permission."),
                   TextButton(
                     style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(10.0)))),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0)))),
                     child: const Text("Allow"),
                     onPressed: () => _handlePermission(),
                   ),
@@ -126,6 +126,7 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
         imageListBloc,
         context,
         colors: Colors.black,
+        screenshotKey: widget.screenshotKey,
       ),
     );
   }
