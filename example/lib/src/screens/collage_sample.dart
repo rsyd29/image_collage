@@ -1,5 +1,3 @@
-library image_collage_widget;
-
 import 'dart:developer';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -89,12 +87,14 @@ class _CollageSample extends State<CollageSample> {
   }
 
   /// call this method to share file
-  _shareScreenShot(List<XFile> files) async {
+  Future<void> _shareScreenShot(List<XFile> files) async {
     setState(() {
       _startLoading = false;
     });
     try {
-      Share.shareXFiles(files);
+      await SharePlus.instance.share(ShareParams(
+        files: files,
+      ));
     } on PlatformException catch (e) {
       log('Platform Exception: $e');
     } catch (e) {

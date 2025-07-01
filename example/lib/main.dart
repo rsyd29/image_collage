@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   ///On click of perticular type of button show that type of widget
-  pushImageWidget(CollageType type) async {
+  Future<void> pushImageWidget(CollageType type) async {
     await Navigator.of(context).push(
       FadeRouteTransition(page: CollageSample(type)),
     );

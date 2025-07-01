@@ -41,22 +41,14 @@ class ImageCollageScreen extends StatefulWidget {
   final Widget? loadingWidget;
 
   @override
-  State<ImageCollageScreen> createState() => _ImageCollageScreenState(
-        filePath: filePath ?? '',
-        collageType: collageType,
-      );
+  State<ImageCollageScreen> createState() => _ImageCollageScreenState();
 }
 
 class _ImageCollageScreenState extends State<ImageCollageScreen>
     with WidgetsBindingObserver {
-  late final String filePath;
-  late final CollageType collageType;
   late CollageBloc imageListBloc;
 
-  _ImageCollageScreenState({
-    required this.filePath,
-    required this.collageType,
-  });
+  _ImageCollageScreenState();
 
   @override
   void initState() {
@@ -64,8 +56,8 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
     WidgetsBinding.instance.addObserver(this);
     imageListBloc = CollageBloc(
       context: context,
-      path: filePath,
-      collageType: collageType,
+      path: widget.filePath ?? '',
+      collageType: widget.collageType,
     );
     imageListBloc.add(ImageListEvent(imageListBloc.blankList()));
   }
@@ -182,11 +174,12 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
     return RepaintBoundary(
       key: widget.screenshotKey,
       child: AspectRatio(
-        aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
+        aspectRatio:
+            (widget.collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
         child: Container(
           color: Colors.white,
           child: GridCollageWidget(
-            collageType,
+            widget.collageType,
             imageListBloc,
             context,
             colors: widget.color ?? Colors.black,

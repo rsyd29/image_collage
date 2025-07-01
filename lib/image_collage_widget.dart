@@ -1,5 +1,3 @@
-library image_collage_widget;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,32 +24,24 @@ class ImageCollageWidget extends StatefulWidget {
   });
 
   @override
-  State<ImageCollageWidget> createState() => _ImageCollageWidgetState(
-        filePath: filePath ?? '',
-        collageType: collageType,
-      );
+  State<ImageCollageWidget> createState() => _ImageCollageWidgetState();
 }
 
 class _ImageCollageWidgetState extends State<ImageCollageWidget>
     with WidgetsBindingObserver {
-  late final String filePath;
-  late final CollageType collageType;
-  bool _withImage = false;
   late CollageBloc imageListBloc;
 
-  _ImageCollageWidgetState({required this.filePath, required this.collageType});
+  _ImageCollageWidgetState();
 
   @override
   void initState() {
     super.initState();
 
-    _withImage = widget.withImage;
-
     WidgetsBinding.instance.addObserver(this);
     imageListBloc = CollageBloc(
       context: context,
-      path: filePath,
-      collageType: collageType,
+      path: widget.filePath ?? '',
+      collageType: widget.collageType,
     );
     imageListBloc.add(ImageListEvent(imageListBloc.blankList()));
     imageListBloc.add(ImageListEvent(imageListBloc.blankList()));
@@ -120,9 +110,10 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
 
   Widget _gridView() {
     return AspectRatio(
-      aspectRatio: (collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
+      aspectRatio:
+          (widget.collageType != CollageType.one) ? 1.0 / 1.0 : 16.0 / 9.0,
       child: GridCollageWidget(
-        collageType,
+        widget.collageType,
         imageListBloc,
         context,
         colors: Colors.black,

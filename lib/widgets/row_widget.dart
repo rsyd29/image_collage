@@ -13,14 +13,14 @@ import '../utils/collage_type.dart';
 import '../utils/permission_type.dart';
 
 class GridCollageWidget extends StatelessWidget {
-  var _imageList = <Images>[];
+  // var _imageList = <Images>[];
   final CollageType _collageType;
   final CollageBloc _imageListBloc;
   final BuildContext _context;
   final Color colors;
   final GlobalKey? screenshotKey;
 
-  GridCollageWidget(
+  const GridCollageWidget(
     this._collageType,
     this._imageListBloc,
     this._context, {
@@ -32,18 +32,19 @@ class GridCollageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_imageListBloc.state is ImageListState) {
-      _imageList = (_imageListBloc.state as ImageListState).images;
+      final List<Images> imageList =
+          (_imageListBloc.state as ImageListState).images;
 
-      return (_imageList.length != 1)
+      return (imageList.length != 1)
           ? StaggeredGridView.countBuilder(
               shrinkWrap: false,
-              itemCount: _imageList.length,
+              itemCount: imageList.length,
               crossAxisCount: getCrossAxisCount(_collageType),
               primary: true,
               crossAxisSpacing: 4,
               mainAxisSpacing: 4,
               itemBuilder: (BuildContext context, int index) =>
-                  buildRow(context, index),
+                  buildRow(context, index, imageList),
               staggeredTileBuilder: (int index) => StaggeredTile.count(
                 getCellCount(
                   index: index,
@@ -59,7 +60,7 @@ class GridCollageWidget extends StatelessWidget {
                 ),
               ),
             )
-          : buildRow(context, 0);
+          : buildRow(context, 0, imageList);
     }
     return Container(
       color: Colors.green,
@@ -90,16 +91,16 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Build UI either image is selected or not
-  Widget buildRow(BuildContext context, int index) {
+  Widget buildRow(BuildContext context, int index, List<Images> imageList) {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
         Positioned.fill(
           bottom: 0.0,
           child: Container(
-            child: _imageList[index].imageUrl != null
+            child: imageList[index].imageUrl != null
                 ? Image.file(
-                    _imageList[index].imageUrl ?? File(''),
+                    imageList[index].imageUrl ?? File(''),
                     fit: BoxFit.fitHeight,
                   )
                 : const Padding(
@@ -175,7 +176,7 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Show bottom sheet
-  showDialogImage(int index) {
+  void showDialogImage(int index) {
     showModalBottomSheet(
         context: _context,
         builder: (BuildContext context) {
@@ -279,7 +280,7 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Dismiss dialog
-  dismissDialog() {
+  void dismissDialog() {
     Navigator.of(_context, rootNavigator: true).pop(true);
   }
 
@@ -287,7 +288,7 @@ class GridCollageWidget extends StatelessWidget {
   /// @param isForCrossAxis = if from cross axis count = true
   /// Note:- If row == column then crossAxisCount = row*column // rowCount or columnCount
   /// e.g. row = 3 and column = 3 then crossAxisCount = 3*3(9) or 3
-  getCellCount(
+  int getCellCount(
       {required int index,
       required bool isForCrossAxis,
       required CollageType type}) {
@@ -410,7 +411,7 @@ class GridCollageWidget extends StatelessWidget {
   }
 
   ///Show image picker dialog
-  imagePickerDialog(int index) {
+  void imagePickerDialog(int index) {
     showDialog(
         context: _context,
         builder: (BuildContext context) {

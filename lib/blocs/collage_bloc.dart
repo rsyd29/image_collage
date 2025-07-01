@@ -73,7 +73,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Checking permission
-  checkPermission(
+  Future<void> checkPermission(
     bool isFromPicker,
     PermissionType permissionType,
     int index,
@@ -93,7 +93,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Ask permission events
-  askForPermission(
+  Future<void> askForPermission(
     PermissionStatus permissionStatus,
     bool isFromPicker,
     PermissionType permissionType,
@@ -200,7 +200,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Asking permission (Platform specific)
-  askPermission(
+  Future<void> askPermission(
     bool isFromPicker,
     PermissionType permissionType,
     int index,
@@ -264,7 +264,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///On click of allow or denied event this method will be called...
-  eventAction(
+  void eventAction(
     bool isForStorage,
     bool isFromPicker,
     PermissionType permissionType,
@@ -300,7 +300,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///For remove photo from particular index
-  dispatchRemovePhotoEvent(int index) {
+  void dispatchRemovePhotoEvent(int index) {
     var imageList = (state as ImageListState).images;
     imageList[index].imageUrl = null;
     add(
@@ -360,7 +360,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   /// The no. of image return as per collage type.
-  getImageCount() {
+  int getImageCount() {
     if (collageType == CollageType.hSplit ||
         collageType == CollageType.vSplit) {
       return 2;
@@ -384,7 +384,7 @@ class CollageBloc extends Bloc<CollageEvent, CollageState> {
   }
 
   ///Used to show message
-  showSnackBar({String? msg}) {
+  void showSnackBar({String? msg}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg ?? 'Permission Denied.'),
