@@ -34,13 +34,13 @@ class _CollageSample extends State<CollageSample> {
             onTap: () => Navigator.pop(context),
             child: const Icon(
               Icons.arrow_back,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           title: const Text(
             "Collage maker",
             style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
+                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
           ),
           actions: <Widget>[
             GestureDetector(
@@ -68,6 +68,7 @@ class _CollageSample extends State<CollageSample> {
             child: ImageCollageWidget(
               collageType: widget.collageType,
               withImage: true,
+              screenshotKey: _screenshotKey,
             ),
           ),
           if (_startLoading)

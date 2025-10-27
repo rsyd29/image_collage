@@ -114,63 +114,65 @@ class GridCollageWidget extends StatelessWidget {
           ),
         ),
         Positioned.fill(
-            child: Material(
-                borderRadius: const BorderRadius.all(Radius.circular(5)),
-                color: Colors.transparent,
-                child: InkWell(
-                    highlightColor: Colors.transparent,
-                    onTap: () => showDialogImage(index),
-                    onLongPress: () async {
-                      RenderRepaintBoundary? boundary =
-                          screenshotKey?.currentContext?.findRenderObject()
-                              as RenderRepaintBoundary?;
-                      final image = await boundary?.toImage(
-                        pixelRatio: 5.0,
-                      );
+          child: Material(
+            borderRadius: const BorderRadius.all(Radius.circular(5)),
+            color: Colors.transparent,
+            child: InkWell(
+              highlightColor: Colors.transparent,
+              onTap: () => showDialogImage(index),
+              onDoubleTap: () async {
+                RenderRepaintBoundary? boundary = screenshotKey?.currentContext
+                    ?.findRenderObject() as RenderRepaintBoundary?;
+                final image = await boundary?.toImage(
+                  pixelRatio: 5.0,
+                );
 
-                      final imageByte = await image?.toByteData(
-                          format: ui.ImageByteFormat.png);
-                      if (imageByte != null) {
-                        final imageBytes = imageByte.buffer.asUint8List();
+                final imageByte =
+                    await image?.toByteData(format: ui.ImageByteFormat.png);
+                if (imageByte != null) {
+                  final imageBytes = imageByte.buffer.asUint8List();
 
-                        ui.Image originalImage =
-                            await decodeImageFromList(imageBytes);
+                  ui.Image originalImage =
+                      await decodeImageFromList(imageBytes);
 
-                        final recorder = ui.PictureRecorder();
-                        final canvas = Canvas(recorder);
+                  final recorder = ui.PictureRecorder();
+                  final canvas = Canvas(recorder);
 
-                        // Terjemahkan titik asal ke tengah gambar
-                        canvas.translate(originalImage.width.toDouble() / 2,
-                            originalImage.height.toDouble() / 2);
+                  // Terjemahkan titik asal ke tengah gambar
+                  canvas.translate(originalImage.width.toDouble() / 2,
+                      originalImage.height.toDouble() / 2);
 
-                        // Kembalikan titik asal dan gambar
-                        canvas.translate(-originalImage.width.toDouble() / 2,
-                            -originalImage.height.toDouble() / 2);
-                        canvas.drawImage(originalImage, Offset.zero, Paint());
+                  // Kembalikan titik asal dan gambar
+                  canvas.translate(-originalImage.width.toDouble() / 2,
+                      -originalImage.height.toDouble() / 2);
+                  canvas.drawImage(originalImage, Offset.zero, Paint());
 
-                        final picture = recorder.endRecording();
-                        final correctedImage = await picture.toImage(
-                            originalImage.width, originalImage.height);
+                  final picture = recorder.endRecording();
+                  final correctedImage = await picture.toImage(
+                      originalImage.width, originalImage.height);
 
-                        final correctedBytes = await correctedImage.toByteData(
-                            format: ui.ImageByteFormat.png);
-                        final correctedUint8List =
-                            correctedBytes!.buffer.asUint8List();
+                  final correctedBytes = await correctedImage.toByteData(
+                      format: ui.ImageByteFormat.png);
+                  final correctedUint8List =
+                      correctedBytes!.buffer.asUint8List();
 
-                        if (context.mounted) {
-                          await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Dialog(
-                                child: Image(
-                                  image: MemoryImage(correctedUint8List),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      }
-                    }))),
+                  if (context.mounted) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: Image(
+                            image: MemoryImage(correctedUint8List),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                }
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
