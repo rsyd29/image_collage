@@ -180,43 +180,45 @@ class GridCollageWidget extends StatelessWidget {
     showModalBottomSheet(
         context: _context,
         builder: (BuildContext context) {
-          return Container(
-            color: const Color(0xFF737373),
+          return SafeArea(
             child: Container(
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0))),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20, bottom: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buildDialogOption(
-                      index,
-                      isForStorage: false,
-                      colors: colors,
-                      collageType: _collageType,
-                    ),
-                    buildDialogOption(
-                      index,
-                      colors: colors,
-                      collageType: _collageType,
-                    ),
-                    (_imageListBloc.state as ImageListState)
-                                .images[index]
-                                .imageUrl !=
-                            null
-                        ? buildDialogOption(
-                            index,
-                            isForRemovePhoto: true,
-                            colors: colors,
-                            collageType: _collageType,
-                          )
-                        : Container(),
-                  ],
+              color: const Color(0xFF737373),
+              child: Container(
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0))),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildDialogOption(
+                        index,
+                        isForStorage: false,
+                        colors: colors,
+                        collageType: _collageType,
+                      ),
+                      buildDialogOption(
+                        index,
+                        colors: colors,
+                        collageType: _collageType,
+                      ),
+                      (_imageListBloc.state as ImageListState)
+                                  .images[index]
+                                  .imageUrl !=
+                              null
+                          ? buildDialogOption(
+                              index,
+                              isForRemovePhoto: true,
+                              colors: colors,
+                              collageType: _collageType,
+                            )
+                          : Container(),
+                    ],
+                  ),
                 ),
               ),
             ),
