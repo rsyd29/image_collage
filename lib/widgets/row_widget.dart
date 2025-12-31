@@ -202,7 +202,6 @@ class GridCollageWidget extends StatelessWidget {
                       if (options.contains('gallery'))
                         buildDialogOption(
                           index,
-                          isForStorage: false,
                           colors: colors,
                           collageType: _collageType,
                         ),
@@ -210,6 +209,7 @@ class GridCollageWidget extends StatelessWidget {
                         buildDialogOption(
                           index,
                           colors: colors,
+                          isForStorage: false,
                           collageType: _collageType,
                         ),
                       (_imageListBloc.state as ImageListState)
@@ -428,9 +428,9 @@ class GridCollageWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  if (options.contains('gallery'))
+                  if (options.contains('gallery')) buildDialogOption(index),
+                  if (options.contains('camera'))
                     buildDialogOption(index, isForStorage: false),
-                  if (options.contains('camera')) buildDialogOption(index),
                   (_imageListBloc.state as ImageListState)
                               .images[index]
                               .imageUrl !=
