@@ -19,6 +19,7 @@ class GridCollageWidget extends StatelessWidget {
   final BuildContext _context;
   final Color colors;
   final GlobalKey? screenshotKey;
+  final List<String> options;
 
   const GridCollageWidget(
     this._collageType,
@@ -27,6 +28,7 @@ class GridCollageWidget extends StatelessWidget {
     super.key,
     required this.colors,
     required this.screenshotKey,
+    this.options = const ['gallery', 'camera'],
   });
 
   @override
@@ -197,17 +199,19 @@ class GridCollageWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      buildDialogOption(
-                        index,
-                        isForStorage: false,
-                        colors: colors,
-                        collageType: _collageType,
-                      ),
-                      buildDialogOption(
-                        index,
-                        colors: colors,
-                        collageType: _collageType,
-                      ),
+                      if (options.contains('gallery'))
+                        buildDialogOption(
+                          index,
+                          isForStorage: false,
+                          colors: colors,
+                          collageType: _collageType,
+                        ),
+                      if (options.contains('camera'))
+                        buildDialogOption(
+                          index,
+                          colors: colors,
+                          collageType: _collageType,
+                        ),
                       (_imageListBloc.state as ImageListState)
                                   .images[index]
                                   .imageUrl !=
@@ -424,8 +428,9 @@ class GridCollageWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  buildDialogOption(index, isForStorage: false),
-                  buildDialogOption(index),
+                  if (options.contains('gallery'))
+                    buildDialogOption(index, isForStorage: false),
+                  if (options.contains('camera')) buildDialogOption(index),
                   (_imageListBloc.state as ImageListState)
                               .images[index]
                               .imageUrl !=

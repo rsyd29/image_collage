@@ -14,6 +14,7 @@ class ImageCollageWidget extends StatefulWidget {
   final CollageType collageType;
   final bool withImage;
   final GlobalKey? screenshotKey;
+  final List<String> options;
 
   const ImageCollageWidget({
     super.key,
@@ -21,6 +22,7 @@ class ImageCollageWidget extends StatefulWidget {
     this.screenshotKey,
     required this.collageType,
     required this.withImage,
+    this.options = const ['gallery', 'camera'],
   });
 
   @override
@@ -118,6 +120,7 @@ class _ImageCollageWidgetState extends State<ImageCollageWidget>
         context,
         colors: Colors.black,
         screenshotKey: widget.screenshotKey,
+        options: widget.options,
       ),
     );
   }
