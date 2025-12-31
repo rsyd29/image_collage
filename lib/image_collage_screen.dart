@@ -186,6 +186,7 @@ class _ImageCollageScreenState extends State<ImageCollageScreen>
             context,
             colors: widget.color ?? Colors.black,
             screenshotKey: widget.screenshotKey,
+            options: widget.options,
           ),
         ),
       ),
