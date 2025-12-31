@@ -24,6 +24,7 @@ class ImageCollageScreen extends StatefulWidget {
     this.buttonStyle,
     this.isLoading = false,
     this.loadingWidget,
+    this.options = const ['gallery', 'camera'],
   });
 
   final CollageType collageType;
@@ -39,6 +40,7 @@ class ImageCollageScreen extends StatefulWidget {
   final VoidCallback? onPressed;
   final bool? isLoading;
   final Widget? loadingWidget;
+  final List<String> options;
 
   @override
   State<ImageCollageScreen> createState() => _ImageCollageScreenState();
